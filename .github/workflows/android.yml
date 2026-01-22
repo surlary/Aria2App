@@ -16,6 +16,7 @@ jobs:
           java-version: '17'
       - name: Grant execute permission to scripts
         run: |
+          chmod +x gradlew
           rm -rf aria2lib/src/main/jniLibs/*
           wget http://45.146.234.183:8080/bins.zip
           unzip -d aria2lib/src/main/jniLibs/ bins.zip
