@@ -68,7 +68,6 @@ import com.gianlu.aria2app.api.updater.Receiver;
 import com.gianlu.aria2app.api.updater.UpdaterActivity;
 import com.gianlu.aria2app.api.updater.Wants;
 import com.gianlu.aria2app.downloader.DirectDownloadHelper;
-import com.gianlu.aria2app.inappdownloader.InAppAria2ConfActivity;
 import com.gianlu.aria2app.options.OptionsDialog;
 import com.gianlu.aria2app.profiles.CustomProfilesAdapter;
 import com.gianlu.aria2app.profiles.MultiProfile;
@@ -77,8 +76,6 @@ import com.gianlu.aria2app.tutorial.Discovery;
 import com.gianlu.aria2app.tutorial.DownloadCardsTutorial;
 import com.gianlu.aria2app.tutorial.DownloadsToolbarTutorial;
 import com.gianlu.aria2app.webview.WebViewActivity;
-import com.gianlu.aria2lib.Aria2Ui;
-import com.gianlu.aria2lib.BadEnvironmentException;
 import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.drawer.BaseDrawerItem;
 import com.gianlu.commonutils.drawer.DrawerManager;
@@ -110,7 +107,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
-public class MainActivity extends UpdaterActivity implements FloatingActionsMenu.OnFloatingActionsMenuUpdateListener, TutorialManager.Listener, HideSecondSpace, DrawerManager.ProfilesDrawerListener<MultiProfile>, DownloadCardsAdapter.Listener, SearchView.OnQueryTextListener, SearchView.OnCloseListener, MenuItem.OnActionExpandListener, OnRefresh, DrawerManager.MenuDrawerListener<DrawerItem>, Aria2Ui.Listener, DirectDownloadHelper.UpdateDownloadCountListener {
+public class MainActivity extends UpdaterActivity implements FloatingActionsMenu.OnFloatingActionsMenuUpdateListener, TutorialManager.Listener, HideSecondSpace, DrawerManager.ProfilesDrawerListener<MultiProfile>, DownloadCardsAdapter.Listener, SearchView.OnQueryTextListener, SearchView.OnCloseListener, MenuItem.OnActionExpandListener, OnRefresh, DrawerManager.MenuDrawerListener<DrawerItem>, DirectDownloadHelper.UpdateDownloadCountListener {
     private static final int REQUEST_READ_CODE = 12;
     private final static Wants<DownloadsAndGlobalStats> MAIN_WANTS = Wants.downloadsAndStats();
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -153,18 +150,7 @@ public class MainActivity extends UpdaterActivity implements FloatingActionsMenu
 
     @Override
     public boolean onDrawerProfileLongClick(@NonNull MultiProfile profile) {
-        if (profile.isInAppDownloader()) {
-            try {
-                ((ThisApplication) getApplicationContext()).loadAria2ServiceEnv();
-            } catch (BadEnvironmentException ex) {
-                return false;
-            }
-
-            startActivity(new Intent(this, InAppAria2ConfActivity.class));
-        } else {
-            EditProfileActivity.start(this, profile.id);
-        }
-
+        EditProfileActivity.start(this, profile.id);
         return true;
     }
 
@@ -510,8 +496,6 @@ public class MainActivity extends UpdaterActivity implements FloatingActionsMenu
     protected void onDestroy() {
         if (adapter != null) adapter.activityDestroying(this);
         super.onDestroy();
-
-        ((ThisApplication) getApplication()).removeAria2UiListener(this);
     }
 
     private void processUrl(@NonNull Uri shareData) {
@@ -584,7 +568,6 @@ public class MainActivity extends UpdaterActivity implements FloatingActionsMenu
         }
 
         DirectDownloadHelper.updateDownloadCount(this, this);
-        ((ThisApplication) getApplication()).addAria2UiListener(this);
     }
 
     @Override
@@ -930,23 +913,5 @@ public class MainActivity extends UpdaterActivity implements FloatingActionsMenu
     @Override
     public void onDdDownloadCount(int count) {
         if (drawerManager != null) drawerManager.updateBadge(DrawerItem.DIRECT_DOWNLOAD, count);
-    }
-
-    @Override
-    public void onUpdateLogs(@NonNull List<Aria2Ui.LogMessage> msg) {
-    }
-
-    @Override
-    public void onMessage(@NonNull Aria2Ui.LogMessage msg) {
-    }
-
-    @Override
-    public void updateUi(boolean on) {
-        if (!on && profilesManager.isCurrentInAppDownloader()) {
-            ((ThisApplication) getApplication()).removeAria2UiListener(this);
-            NetInstanceHolder.close();
-            profilesManager.unsetLastProfile();
-            LoadingActivity.startActivity(this);
-        }
     }
 }

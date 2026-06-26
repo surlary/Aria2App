@@ -29,6 +29,7 @@ public class CustomProfilesAdapter extends ProfilesAdapter<MultiProfile, CustomP
     private final ExecutorService executorService = Executors.newCachedThreadPool();
     private final LayoutInflater inflater;
     private final boolean forceWhite;
+    private OnProfileTestListener testListener;
 
     public CustomProfilesAdapter(Context context, List<MultiProfile> profiles, @StyleRes int overrideStyle, DrawerManager.ProfilesDrawerListener<MultiProfile> listener) {
         super(context, profiles, listener);
@@ -56,30 +57,23 @@ public class CustomProfilesAdapter extends ProfilesAdapter<MultiProfile, CustomP
         holder.name.setText(profile.getPrimaryText(context));
         holder.secondary.setText(profile.getSecondaryText(context));
 
-        if (profile.isInAppDownloader()) {
+        if (multi.status.status == MultiProfile.Status.UNKNOWN) {
+            holder.loading.setVisibility(View.VISIBLE);
+            holder.status.setVisibility(View.GONE);
+        } else {
             holder.loading.setVisibility(View.GONE);
             holder.status.setVisibility(View.VISIBLE);
-            if (forceWhite) holder.status.setImageResource(R.drawable.ic_aria2_notification);
-            else holder.status.setImageResource(R.drawable.ic_aria2android);
-        } else {
-            if (multi.status.status == MultiProfile.Status.UNKNOWN) {
-                holder.loading.setVisibility(View.VISIBLE);
-                holder.status.setVisibility(View.GONE);
-            } else {
-                holder.loading.setVisibility(View.GONE);
-                holder.status.setVisibility(View.VISIBLE);
 
-                switch (multi.status.status) {
-                    case ONLINE:
-                        holder.status.setImageResource(R.drawable.baseline_done_24);
-                        break;
-                    case OFFLINE:
-                        holder.status.setImageResource(R.drawable.baseline_clear_24);
-                        break;
-                    case ERROR:
-                        holder.status.setImageResource(R.drawable.baseline_error_24);
-                        break;
-                }
+            switch (multi.status.status) {
+                case ONLINE:
+                    holder.status.setImageResource(R.drawable.baseline_done_24);
+                    break;
+                case OFFLINE:
+                    holder.status.setImageResource(R.drawable.baseline_clear_24);
+                    break;
+                case ERROR:
+                    holder.status.setImageResource(R.drawable.baseline_error_24);
+                    break;
             }
         }
 
@@ -125,11 +119,20 @@ public class CustomProfilesAdapter extends ProfilesAdapter<MultiProfile, CustomP
     @Override
     public void statusUpdated(@NonNull String profileId, @NonNull MultiProfile.TestStatus status) {
         itemChanged(profileId, status);
+        if (testListener != null) testListener.onProfileTestComplete(profileId, status);
     }
 
     @Override
     public void pingUpdated(@NonNull String profileId, long ping) {
         itemChanged(profileId, ping);
+    }
+
+    public void setOnProfileTestListener(OnProfileTestListener listener) {
+        this.testListener = listener;
+    }
+
+    public interface OnProfileTestListener {
+        void onProfileTestComplete(@NonNull String profileId, @NonNull MultiProfile.TestStatus status);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

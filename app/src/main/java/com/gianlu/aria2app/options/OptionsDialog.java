@@ -141,7 +141,7 @@ public class OptionsDialog extends DialogFragment implements AbstractClient.OnRe
         }
 
         layout.findViewById(R.id.optionsDialog_notPermanentOptionsDisclaimer)
-                .setVisibility(helper.isInAppDownloader() ? View.VISIBLE : View.GONE);
+                .setVisibility(View.GONE);
 
         helper.request(req, this);
 
@@ -259,7 +259,7 @@ public class OptionsDialog extends DialogFragment implements AbstractClient.OnRe
         export.setVisibility(View.VISIBLE);
 
         try {
-            optionsView.setAdapter(OptionsAdapter.setup(getContext(), result, global, quick, false, this));
+            optionsView.setAdapter(OptionsAdapter.setup(getContext(), result, global, quick, true, this));
         } catch (IOException | JSONException ex) {
             onException(ex);
         }

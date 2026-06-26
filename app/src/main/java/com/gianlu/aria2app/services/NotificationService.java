@@ -699,9 +699,7 @@ public class NotificationService extends Service {
         @Override
         public void onFailure(@NonNull WebSocket ws, @NonNull Throwable throwable, Response response) {
             removeWebsocket(ws, profile);
-
-            if (!profile.isInAppDownloader())
-                notifyException(profile, throwable);
+            notifyException(profile, throwable);
         }
     }
 }

@@ -5613,19 +5613,6 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
 
-        <!-- In-App downloader configuration activity -->
-        <activity
-            android:name=".inappdownloader.InAppAria2ConfActivity"
-            android:configChanges="uiMode"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.FullBlackNight"
-            android:windowSoftInputMode="stateHidden" />
-
-        <!-- In-App downloader custom options activity -->
-        <activity
-            android:name="com.gianlu.aria2lib.ui.ConfigEditorActivity"
-            android:theme="@style/AppTheme.FullBlackNight" />
-
         <!-- DirectDownload activity -->
         <activity
             android:name=".activities.DirectDownloadActivity"

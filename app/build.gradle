@@ -82,12 +82,6 @@ android {
         }
     }
 
-    packagingOptions {
-        jniLibs {
-            useLegacyPackaging = true
-        }
-    }
-
     packaging {
         resources.pickFirsts.add("META-INF/versions/9/OSGI-INF/MANIFEST.MF")
     }
@@ -107,7 +101,6 @@ play {
 
 dependencies {
     implementation project(':CommonUtils')
-    implementation project(':aria2lib')
 
     implementation 'com.github.tonyofrancis.Fetch:fetch2:3.4.1'
     implementation 'com.github.tonyofrancis.Fetch:fetch2okhttp:3.4.1'

@@ -21,6 +21,5 @@ dependencyResolutionManagement {
     }
 }
 
-include ':CommonUtils', ':aria2lib', ':app'
+include ':CommonUtils', ':app'
 project(':CommonUtils').projectDir = new File('./CommonUtils')
-project(':aria2lib').projectDir = new File('./aria2lib')

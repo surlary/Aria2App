@@ -38,11 +38,6 @@ public abstract class AbstractClient implements Closeable, ClientInterface {
     }
 
     @Override
-    public boolean isInAppDownloader() {
-        return profile.isInAppDownloader();
-    }
-
-    @Override
     @WorkerThread
     public final void close() {
         closed = true;

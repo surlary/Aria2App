@@ -152,11 +152,10 @@ public class FileSheet extends ThemedModalBottomSheet<FileSheet.SetupPayload, Ar
 
     @Override
     protected boolean onCustomizeAction(@NonNull FloatingActionButton action, @NonNull SetupPayload payload) {
-        boolean isInAppDownloader = ProfilesManager.get(requireContext()).isCurrentInAppDownloader();
-        if (payload.download.update().isMetadata() || (helper == null && !isInAppDownloader)) {
+        if (payload.download.update().isMetadata() || helper == null) {
             return false;
         } else {
-            action.setImageResource(isInAppDownloader ? R.drawable.baseline_open_in_new_24 : R.drawable.baseline_download_24);
+            action.setImageResource(R.drawable.baseline_download_24);
             action.setSupportImageTintList(ColorStateList.valueOf(Color.WHITE));
             CommonUtils.setBackgroundColor(action, payload.download.update().getColorVariant());
             action.setOnClickListener(v -> payload.listener.onDownloadFile(payload.file, false));

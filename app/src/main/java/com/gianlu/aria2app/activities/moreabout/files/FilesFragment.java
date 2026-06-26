@@ -290,15 +290,6 @@ public class FilesFragment extends UpdaterFragment<DownloadWithUpdate.BigUpdate>
         }
 
         String mime = file.getMimeType();
-        if (getHelper().isInAppDownloader()) {
-            Intent intent = new Intent(Intent.ACTION_VIEW)
-                    .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.setData(FileProvider.getUriForFile(requireContext(), "com.gianlu.aria2app", new File(file.getAbsolutePath())));
-            if (mime != null) intent.setType(mime);
-            startActivity(Intent.createChooser(intent, "Open the file..."));
-            return;
-        }
-
         showProgress(R.string.gathering_information);
         getHelper().request(AriaRequests.getGlobalOptions(), new AbstractClient.OnResult<OptionsMap>() {
             @Override

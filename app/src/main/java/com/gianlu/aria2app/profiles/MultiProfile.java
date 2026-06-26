@@ -11,15 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.gianlu.aria2app.R;
-import com.gianlu.aria2app.ThisApplication;
 import com.gianlu.aria2app.activities.editprofile.AuthenticationFragment;
 import com.gianlu.aria2app.activities.editprofile.ConnectionFragment;
 import com.gianlu.aria2app.activities.editprofile.DirectDownloadFragment;
 import com.gianlu.aria2app.api.AbstractClient;
 import com.gianlu.aria2app.api.CertUtils;
 import com.gianlu.aria2app.api.NetUtils;
-import com.gianlu.aria2lib.Aria2PK;
-import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.drawer.BaseDrawerProfile;
 import com.gianlu.commonutils.preferences.Prefs;
 
@@ -34,12 +31,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
 
 import okhttp3.HttpUrl;
 
 public class MultiProfile implements BaseDrawerProfile, Serializable {
-    public static final String IN_APP_DOWNLOADER_NAME = "In-App downloader";
     private static final long serialVersionUID = 1L;
     public final ArrayList<UserProfile> profiles;
     public final String id;
@@ -107,23 +102,6 @@ public class MultiProfile implements BaseDrawerProfile, Serializable {
             for (int i = 0; i < profilesArray.length(); i++)
                 this.profiles.add(new UserProfile(profilesArray.getJSONObject(i)));
         }
-    }
-
-    @NonNull
-    public static MultiProfile forInAppDownloader() {
-        int port = ThreadLocalRandom.current().nextInt(2000, 8000);
-        Prefs.putInt(Aria2PK.RPC_PORT, port);
-
-        String token = CommonUtils.randomString(8, ThreadLocalRandom.current());
-        Prefs.putString(Aria2PK.RPC_TOKEN, token);
-
-        MultiProfile profile = new MultiProfile(IN_APP_DOWNLOADER_NAME, true);
-        profile.add(ConnectivityCondition.newUniqueCondition(),
-                new ConnectionFragment.Fields(ConnectionMethod.WEBSOCKET, "localhost", port, "/jsonrpc", false, null, false),
-                new AuthenticationFragment.Fields(AbstractClient.AuthMethod.TOKEN, token, null, null),
-                new DirectDownloadFragment.Fields(null));
-
-        return profile;
     }
 
     @Override
@@ -262,10 +240,6 @@ public class MultiProfile implements BaseDrawerProfile, Serializable {
 
     void updateStatusPing(long ping) {
         if (status != null) this.status = new TestStatus(status.status, ping);
-    }
-
-    public boolean isInAppDownloader() {
-        return name.equals(IN_APP_DOWNLOADER_NAME);
     }
 
     public boolean isEmpty() {
@@ -892,27 +866,11 @@ public class MultiProfile implements BaseDrawerProfile, Serializable {
         @NonNull
         @Override
         public String getSecondaryText(@NonNull Context context) {
-            if (isInAppDownloader()) {
-                ThisApplication app = ((ThisApplication) context.getApplicationContext());
-                if (app.hasAria2ServiceEnv()) {
-                    if (app.getLastAria2UiState())
-                        return context.getString(R.string.inAppDownloader_serviceStarted);
-                    else
-                        return context.getString(R.string.inAppDownloader_serviceNotStarted);
-                } else {
-                    return context.getString(R.string.inAppDownloader_serviceNotConfigured);
-                }
-            }
-
             try {
                 return getFullServerAddress();
             } catch (NetUtils.InvalidUrlException ex) {
                 return "";
             }
-        }
-
-        public boolean isInAppDownloader() {
-            return name.equals(IN_APP_DOWNLOADER_NAME);
         }
     }
 }

@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.gianlu.aria2app.PK;
-import com.gianlu.aria2app.ThisApplication;
 import com.gianlu.aria2app.downloader.DirectDownloadHelper;
 import com.gianlu.commonutils.preferences.Prefs;
 
@@ -79,11 +78,6 @@ public class ProfilesManager {
         }
     }
 
-    public boolean isCurrentInAppDownloader() {
-        if (currentProfile == null) currentProfile = getLastProfile();
-        return currentProfile != null && currentProfile.isInAppDownloader();
-    }
-
     @NonNull
     public MultiProfile.UserProfile getCurrentSpecific() throws NoCurrentProfileException {
         return getCurrent().getProfile(this);
@@ -142,14 +136,10 @@ public class ProfilesManager {
     }
 
     public boolean hasProfiles() {
-        return true; // In-App Downloader is always available
+        return getProfileIds().length > 0;
     }
 
     public boolean hasNotificationProfiles(@NonNull Context context) {
-        context = context.getApplicationContext();
-        if (context instanceof ThisApplication && ((ThisApplication) context).getLastAria2UiState())
-            return true;
-
         for (String id : getProfileIds()) {
             try {
                 if (retrieveProfile(id).notificationsEnabled)
@@ -196,19 +186,12 @@ public class ProfilesManager {
 
     @NonNull
     private List<MultiProfile> getProfiles(boolean notification, @Nullable Context context) {
-        context = context == null ? null : context.getApplicationContext();
-
-        boolean hasInApp = false;
         List<MultiProfile> profiles = new ArrayList<>();
         for (String id : getProfileIds()) {
             try {
                 MultiProfile profile = retrieveProfile(id);
-                if (profile.isInAppDownloader()) hasInApp = true;
                 if (notification) {
-                    if (profile.isInAppDownloader()) {
-                        if ((context instanceof ThisApplication) && ((ThisApplication) context).getLastAria2UiState())
-                            profiles.add(profile);
-                    } else if (profile.notificationsEnabled) {
+                    if (profile.notificationsEnabled) {
                         profiles.add(profile);
                     }
                 } else {
@@ -216,17 +199,6 @@ public class ProfilesManager {
                 }
             } catch (IOException | JSONException ex) {
                 Log.e(TAG, "Failed getting profile: " + id, ex);
-            }
-        }
-
-        if (!hasInApp) {
-            MultiProfile inApp = MultiProfile.forInAppDownloader();
-            profiles.add(inApp);
-
-            try {
-                save(inApp);
-            } catch (IOException | JSONException | IllegalStateException ex) {
-                Log.e(TAG, "Failed saving in-app downloader profile.", ex);
             }
         }
 

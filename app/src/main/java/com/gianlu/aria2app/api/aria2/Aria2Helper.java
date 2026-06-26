@@ -15,10 +15,8 @@ import com.gianlu.aria2app.api.AriaRequests;
 import com.gianlu.aria2app.api.ClientInterface;
 import com.gianlu.aria2app.api.NetInstanceHolder;
 import com.gianlu.aria2app.profiles.ProfilesManager;
-import com.gianlu.aria2lib.Aria2PK;
 import com.gianlu.commonutils.dialogs.DialogUtils;
 import com.gianlu.commonutils.preferences.Prefs;
-import com.gianlu.commonutils.preferences.json.JsonStoring;
 import com.gianlu.commonutils.ui.Toaster;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -27,7 +25,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 public class Aria2Helper {
@@ -60,41 +57,12 @@ public class Aria2Helper {
         }
     }
 
-    public boolean isInAppDownloader() {
-        return client.isInAppDownloader();
-    }
-
-    private void processGlobalOptionsUpdate(@NonNull JSONObject newOptions) {
-        if (!client.isInAppDownloader()) return;
-
-        try {
-            JSONObject options = JsonStoring.intoPrefs().getJsonObject(Aria2PK.CUSTOM_OPTIONS);
-            if (options == null) options = new JSONObject();
-
-            Iterator<String> iter = newOptions.keys();
-            while (iter.hasNext()) {
-                String key = iter.next();
-                options.put(key, newOptions.get(key));
-            }
-
-            JsonStoring.intoPrefs().putJsonObject(Aria2PK.CUSTOM_OPTIONS, options);
-        } catch (JSONException ex) {
-            Log.e(TAG, "Failed saving In-App downloader options.", ex);
-        }
-    }
-
     public final <T> void request(AbstractClient.AriaRequestWithResult<T> request, AbstractClient.OnResult<T> listener) {
         client.send(request, listener);
-
-        if (request.method == AbstractClient.Method.CHANGE_GLOBAL_OPTIONS)
-            processGlobalOptionsUpdate((JSONObject) request.params[0]);
     }
 
     public final void request(AbstractClient.AriaRequest request, AbstractClient.OnSuccess listener) {
         client.send(request, listener);
-
-        if (request.method == AbstractClient.Method.CHANGE_GLOBAL_OPTIONS)
-            processGlobalOptionsUpdate((JSONObject) request.params[0]);
     }
 
     public void getVersionAndSession(AbstractClient.OnResult<VersionAndSession> listener) {

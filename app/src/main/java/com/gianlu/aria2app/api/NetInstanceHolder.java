@@ -100,10 +100,5 @@ public final class NetInstanceHolder {
         public <R> void batch(@NonNull AbstractClient.BatchSandbox<R> sandbox, AbstractClient.OnResult<R> listener) {
             if (current != null) current.batch(sandbox, listener);
         }
-
-        @Override
-        public boolean isInAppDownloader() {
-            return current != null && current.isInAppDownloader();
-        }
     }
 }

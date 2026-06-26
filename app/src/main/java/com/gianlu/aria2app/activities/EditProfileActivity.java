@@ -377,8 +377,7 @@ public class EditProfileActivity extends ActivityWithDialog implements TestFragm
     @NonNull
     private MultiProfile buildProfile() throws InvalidFieldException {
         String profileName = CommonUtils.getText(this.profileName).trim();
-        if (profileName.isEmpty() || (ProfilesManager.get(this).profileExists(ProfilesManager.getId(profileName)) && editProfile == null)
-                || profileName.equals(MultiProfile.IN_APP_DOWNLOADER_NAME)) {
+        if (profileName.isEmpty() || (ProfilesManager.get(this).profileExists(ProfilesManager.getId(profileName)) && editProfile == null)) {
             throw new InvalidFieldException(Where.ACTIVITY, R.id.editProfile_profileName, R.string.invalidProfileName);
         }
 

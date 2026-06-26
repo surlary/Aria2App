@@ -18,7 +18,6 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,7 +27,6 @@ import com.gianlu.aria2app.PK;
 import com.gianlu.aria2app.R;
 import com.gianlu.aria2app.Utils;
 import com.gianlu.aria2app.api.aria2.Aria2Helper;
-import com.gianlu.aria2app.api.aria2.AriaFile;
 import com.gianlu.aria2app.api.aria2.Download;
 import com.gianlu.aria2app.api.aria2.DownloadWithUpdate;
 import com.gianlu.aria2app.services.NotificationService;
@@ -41,7 +39,6 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 
-import java.io.File;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -412,26 +409,7 @@ public class DownloadCardsAdapter extends OrderedRecyclerViewAdapter<DownloadCar
                     break;
             }
 
-            if (!download.update().isTorrent() && download.update().status == Download.Status.COMPLETE
-                    && download.isFromInAppDownloader()) {
-                List<AriaFile> files = download.update().files;
-                if (files.size() == 1) {
-                    open.setVisibility(View.VISIBLE);
-                    open.setOnClickListener(v -> {
-                        AriaFile file = files.get(0);
-                        String mime = file.getMimeType();
-                        Intent intent = new Intent(Intent.ACTION_VIEW)
-                                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        intent.setData(FileProvider.getUriForFile(context, "com.gianlu.aria2app", new File(file.getAbsolutePath())));
-                        if (mime != null) intent.setType(mime);
-                        activityContext.startActivity(Intent.createChooser(intent, "Open the file..."));
-                    });
-                } else {
-                    open.setVisibility(View.GONE);
-                }
-            } else {
-                open.setVisibility(View.GONE);
-            }
+            open.setVisibility(View.GONE);
         }
 
         public void update(@NonNull DownloadWithUpdate download) {

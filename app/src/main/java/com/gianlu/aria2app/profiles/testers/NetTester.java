@@ -73,7 +73,7 @@ public class NetTester extends BaseTester<AbstractClient> {
 
         synchronized (lock) {
             try {
-                lock.wait(5000);
+                lock.wait(3000);
             } catch (InterruptedException ignored) {
             }
 
