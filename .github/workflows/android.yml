@@ -9,19 +9,29 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: recursive
+          submodules: false  # 关闭自动递归拉取子模块
       - uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: '17'
+
+      # 只单独拉取 CommonUtils，跳过 aria2lib
+      - name: Fetch valid submodule only
+        run: |
+          git submodule sync
+          git submodule update --init --force --depth=1 CommonUtils
+
       - name: Grant execute permission to scripts
         run: |
           chmod +x gradlew
+
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
+
       - name: Build with Gradle
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         run: ./gradlew connectedCheck --no-daemon
+
       - name: Upload compiled bin
         uses: actions/upload-artifact@v4
         with:
