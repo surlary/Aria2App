@@ -25,8 +25,8 @@ jobs:
         run: |
           chmod +x gradlew
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      #- name: Setup tmate session
+      #  uses: mxschmitt/action-tmate@v3
 
       - name: Build with Gradle
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
