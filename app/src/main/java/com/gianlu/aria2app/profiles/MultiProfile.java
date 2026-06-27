@@ -17,6 +17,7 @@ import com.gianlu.aria2app.activities.editprofile.DirectDownloadFragment;
 import com.gianlu.aria2app.api.AbstractClient;
 import com.gianlu.aria2app.api.CertUtils;
 import com.gianlu.aria2app.api.NetUtils;
+import com.gianlu.commonutils.CommonUtils;
 import com.gianlu.commonutils.drawer.BaseDrawerProfile;
 import com.gianlu.commonutils.preferences.Prefs;
 
